@@ -3,8 +3,8 @@ const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const applicationRoutes = require('./routes/applicationRoutes');
-//const contactRoutes = require('./routes/contactRoutes');
-//const interviewRoutes = require('./routes/interviewRoutes');
+const contactRoutes = require('./routes/contactRoutes');
+const interviewRoutes = require('./routes/interviewRoutes');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
 dotenv.config();
@@ -15,8 +15,12 @@ app.use(express.json());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/applications', applicationRoutes);
-//app.use('/api/contacts', contactRoutes);
-//app.use('/api/interviews', interviewRoutes);
+app.use('/api/contacts', contactRoutes);
+app.use('/api/interviews', interviewRoutes);
+
+app.get('/', (req, res) => {
+    res.send('HustleHub API is live!');
+  });
 
 app.use(notFound);
 app.use(errorHandler);
