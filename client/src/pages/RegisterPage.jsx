@@ -1,20 +1,37 @@
 import { useState } from "react";
+import axios from "axios";
 
 export default function RegisterPage() {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // TODO: Make API call to /api/auth/register
-        alert(`Registering as ${username}`);
+        setError("");
+        setLoading(true);
+        try {
+            const res = await axios.post("http://localhost:5000/api/auth/register", {
+                username,
+                email,
+                password,
+            });
+            alert(`Registered! Token: ${res.data.token}`);
+            setLoading(false);
+            // Store the token (e.g in localStorage or context)
+        } catch (err) {
+            setError(err.response?.data?.message || "Registration failed");
+            setLoading(false);
+        }
     };
 
     return (
         <div className="min-h-screen flex item-center justify-center bg-green-50">
             <form onSubmit={handleSubmit} className="bg-white p-8 rounded shadow w-full max-w-sm">
                 <h2 className="text-2xl font-bold mb-4 text-green-600">Register</h2>
+                {error && <div className="text-red-600 mb-2">{error}</div>}
                 <input
                     type="text"
                     placeholder="Username"
@@ -39,8 +56,11 @@ export default function RegisterPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                 />
-                <button className="w-full bg-green-600 text-white py-2 rounded font-semibold hover:bg-green-700 transition">
-                    Register
+                <button 
+                    className="w-full bg-green-600 text-white py-2 rounded font-semibold hover:bg-green-700 transition"
+                    disabled={loading}
+                >
+                    {loading ? "Registering..." : "Register"}
                 </button>
             </form>
         </div>
