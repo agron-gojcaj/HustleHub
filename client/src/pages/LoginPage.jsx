@@ -1,11 +1,13 @@
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -16,9 +18,9 @@ export default function LoginPage() {
                 email,
                 password
             });
-            alert(`Logged in! Token: ${res.data.token}`);
-            // Now store the token (e.g. in localStorage or context)
+            localStorage.setItem("token", res.data.token);
             setLoading(false);
+            navigate("/dashboard");
         } catch (err) {
             setError(err.response?.data?.message || "Login failed");
             setLoading(false);
