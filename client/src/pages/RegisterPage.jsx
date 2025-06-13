@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function RegisterPage() {
     const [username, setUsername] = useState("");
@@ -7,6 +8,7 @@ export default function RegisterPage() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -18,9 +20,9 @@ export default function RegisterPage() {
                 email,
                 password,
             });
-            alert(`Registered! Token: ${res.data.token}`);
+            localStorage.setItem("token", res.data.token);
             setLoading(false);
-            // Store the token (e.g in localStorage or context)
+            navigate("/dashboard");
         } catch (err) {
             setError(err.response?.data?.message || "Registration failed");
             setLoading(false);
