@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import JobList from "../components/JobList";
 
 export default function DashboardPage() {
     const [user, setUser] = useState(null);
@@ -53,6 +54,7 @@ export default function DashboardPage() {
     return (
         <div className="min-h-screen flex items-center justify-center bg-slate-50">
             <h1 className="text-3xl font-bold text-green-700">Welcome to our Dashboard!</h1>
+            <JobList />
             <div className="mb-6">
                 <p className="text-lg"><span className="font-bold">Username:</span> {user.username}</p>
                 <p className="text-lg"><span className="font-bold">Email:</span> {user.email}</p>
