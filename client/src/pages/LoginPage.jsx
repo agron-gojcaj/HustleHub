@@ -19,6 +19,7 @@ export default function LoginPage() {
                 password
             });
             localStorage.setItem("token", res.data.token);
+            localStorage.setItem("user", JSON.stringify(res.data.user));
             setLoading(false);
             navigate("/dashboard");
         } catch (err) {
