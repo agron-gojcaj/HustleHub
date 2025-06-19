@@ -11,7 +11,7 @@ export default function JobList() {
             setLoading(true);
             const token = localStorage.getItem("token");
             try {
-                const res = await axios.get("http://localhost:5000/api/jobs", {
+                const res = await axios.get("http://localhost:5000/api/applications", {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setJobs(res.data);
