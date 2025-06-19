@@ -48,12 +48,20 @@ exports.updateApplication = async (req, res) => {
 exports.deleteApplication = async (req, res) => {
   try {
     const application = await Application.findById(req.params.id);
-    if (!application || application.user.toString() !== req.user._id.toString()) {
-      return res.status(404).json({ message: 'Application not found or unauthorized' });
+    if (!application) {
+      return res.status(404).json({ message: 'Application not found' });
     }
-    await application.remove();
+    if (application.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Unauthorized' });
+    }
+    await application.deleteOne();
     res.json({ message: 'Application deleted' });
   } catch (err) {
+    // Check for invalid ObjectId
+    if (err.name === "CastError") {
+      return res.status(400).json({ message: 'Invalid application ID' });
+    }
+    console.error(err);
     res.status(500).json({ message: 'Server error' });
   }
 };

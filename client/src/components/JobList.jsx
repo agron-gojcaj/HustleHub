@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-export default function JobList() {
+export default function JobList({ refreshKey }) {
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -22,7 +22,20 @@ export default function JobList() {
             }
         };
         fetchJobs();
-    }, []);
+    }, [refreshKey]);
+
+    const handleDelete = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this job?")) return;
+        const token = localStorage.getItem("token");
+        try {
+            await axios.delete(`http://localhost:5000/api/applications/${id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setJobs(jobs.filter(job => job._id !== id));
+        } catch (err) {
+            alert("Failed to delete job");
+        }
+    };
 
     if (loading) return <div>Loading jobs...</div>;
     if (error) return <div className="text-red-600">{error}</div>;
@@ -37,6 +50,7 @@ export default function JobList() {
                         <th className="p-2 text-left">Company</th>
                         <th className="p-2 text-left">Position</th>
                         <th className="p-2 text-left">Status</th>
+                        <th className="p-2"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -45,6 +59,14 @@ export default function JobList() {
                             <td className="p-2">{job.company}</td>
                             <td className="p-2">{job.position}</td>
                             <td className="p-2">{job.status}</td>
+                            <td className="p-2">
+                                <button
+                                className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                                onClick={() => handleDelete(job._id)}
+                                >
+                                    Delete
+                                </button>
+                            </td>
                         </tr>
                     ))}
                 </tbody>
