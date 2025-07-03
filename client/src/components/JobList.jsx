@@ -117,7 +117,7 @@ export default function JobList({ refreshKey }) {
                                         onChange={handleEditChange}
                                     >
                                         <option value="Applied">Applied</option>
-                                        <option value="Interview">Interview</option>
+                                        <option value="Interviewing">Interviewing</option>
                                         <option value="Offer">Offer</option>
                                         <option value="Rejected">Rejected</option>
                                     </select>

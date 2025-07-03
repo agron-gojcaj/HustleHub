@@ -57,7 +57,7 @@ export default function AddJobForm({ onJobAdded }) {
                     onChange={(e) => setStatus(e.target.value)}
                 >
                     <option value="Applied">Applied</option>
-                    <option value="Interview">Interview</option>
+                    <option value="Interviewing">Interviewing</option>
                     <option value="Offer">Offer</option>
                     <option value="Rejected">Rejected</option>
                 </select>
