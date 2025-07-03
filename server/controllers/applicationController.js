@@ -34,14 +34,20 @@ exports.getApplications = async (req, res) => {
 exports.updateApplication = async (req, res) => {
   try {
     const application = await Application.findById(req.params.id);
-    if (!application || application.user.toString() !== req.user._id.toString()) {
-      return res.status(404).json({ message: 'Application not found or unauthorized' });
+    if (!application) {
+      return res.status(404).json({ message: 'Application not found' });
+    }
+    if (application.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Unauthorized' });
     }
     Object.assign(application, req.body);
     const updated = await application.save();
     res.json(updated);
   } catch (err) {
-    res.status(500).json({ message: 'Server error' });
+    if (err.name === "CastError") {
+      return res.status(400).json({ message: 'Invalid application ID' });
+    }
+    return res.status(500).json({ message: 'Server error' });
   }
 };
 

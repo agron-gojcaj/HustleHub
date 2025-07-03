@@ -3,6 +3,8 @@ import axios from 'axios';
 
 export default function JobList({ refreshKey }) {
     const [jobs, setJobs] = useState([]);
+    const [editingId, setEditingId] = useState(null);
+    const [editData, setEditData] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
@@ -23,6 +25,39 @@ export default function JobList({ refreshKey }) {
         };
         fetchJobs();
     }, [refreshKey]);
+
+    const startEdit = (job) => {
+        setEditingId(job._id);
+        setEditData({
+            company: job.company,
+            position: job.position,
+            status: job.status,
+        });
+    };
+
+    const cancelEdit = () => {
+        setEditingId(null);
+        setEditData({});
+    };
+
+    const handleEditChange = (e) => {
+        setEditData({ ...editData, [e.target.name]: e.target.value });
+    }
+
+    const saveEdit = async (id) => {
+        const token = localStorage.getItem("token");
+        try {
+            const res = await axios.put(
+                `http://localhost:5000/api/applications/${id}`,
+                editData,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            setJobs(jobs.map(job => job._id === id ? res.data : job));
+            cancelEdit();
+        } catch (err) {
+            alert("Failed to update job application");
+        }
+    };
 
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete this job?")) return;
@@ -50,23 +85,79 @@ export default function JobList({ refreshKey }) {
                         <th className="p-2 text-left">Company</th>
                         <th className="p-2 text-left">Position</th>
                         <th className="p-2 text-left">Status</th>
-                        <th className="p-2"></th>
+                        <th className="p-2">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {jobs.map((job) => (
                         <tr key={job._id} className="border-t">
-                            <td className="p-2">{job.company}</td>
-                            <td className="p-2">{job.position}</td>
-                            <td className="p-2">{job.status}</td>
-                            <td className="p-2">
+                            {editingId === job._id ? (
+                              <>
+                                <td className="p-2">
+                                    <input
+                                        name="company"
+                                        className="border rounded px-2 py-1 w-full"
+                                        value={editData.company}
+                                        onChange={handleEditChange}
+                                    />
+                                </td>
+                                <td className="p-2">
+                                    <input
+                                        name="position"
+                                        className="border rounded px-2 py-1 w-full"
+                                        value={editData.position}
+                                        onChange={handleEditChange}
+                                    />
+                                </td>
+                                <td className="p-2">
+                                    <select
+                                        name="status"
+                                        className="border rounded px-2 py-1 w-full"
+                                        value={editData.status}
+                                        onChange={handleEditChange}
+                                    >
+                                        <option value="Applied">Applied</option>
+                                        <option value="Interview">Interview</option>
+                                        <option value="Offer">Offer</option>
+                                        <option value="Rejected">Rejected</option>
+                                    </select>
+                                </td>
+                                <td className="p-2" flex gap-2 justify-center>
+                                    <button
+                                        className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+                                        onClick={() => saveEdit(job._id)}
+                                    >
+                                        Save
+                                    </button>
+                                    <button
+                                        className="bg-gray-400 text-white px-3 py-1 rounded hover:bg-gray-500"
+                                        onClick={cancelEdit}
+                                    >
+                                        Cancel
+                                    </button>
+                                </td>
+                              </>  
+                            ) : (
+                            <>
+                                <td className="p-2">{job.company}</td>
+                                <td className="p-2">{job.position}</td>
+                                <td className="p-2">{job.status}</td>
+                                <td className="p-2 flex gap-2 justify-center">
                                 <button
-                                className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-                                onClick={() => handleDelete(job._id)}
+                                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                                    onClick={() => startEdit(job)}
+                                >
+                                    Edit
+                                </button>
+                                <button
+                                    className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                                    onClick={() => handleDelete(job._id)}
                                 >
                                     Delete
                                 </button>
-                            </td>
+                                </td>
+                            </>
+                            )}
                         </tr>
                     ))}
                 </tbody>
