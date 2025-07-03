@@ -7,6 +7,8 @@ export default function JobList({ refreshKey }) {
     const [editData, setEditData] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [filterStatus, setFilterStatus] = useState("All");
+    const [sortBy, setSortBy] = useState("date-desc");
 
     useEffect(() => {
         const fetchJobs = async () => {
@@ -72,6 +74,22 @@ export default function JobList({ refreshKey }) {
         }
     };
 
+    let displayedJobs = [...jobs];
+
+    if (filterStatus !== "All") {
+        displayedJobs = displayedJobs.filter(job => job.status === filterStatus);
+    }
+
+    if (sortBy === "date-desc") {
+        displayedJobs.sort((a, b) => new Date(b.appliedDate) - new Date(a.appliedDate));
+    } else if (sortBy === "date-asc") {
+        displayedJobs.sort((a, b) => new Date(a.appliedDate) - new Date(b.appliedDate));
+    } else if (sortBy === "company-asc") {
+        displayedJobs.sort((a, b) => a.company.localeCompare(b.company));
+    } else if (sortBy === "company-desc") {
+        displayedJobs.sort((a, b) => b.company.localeCompare(a.company));
+    }
+
     if (loading) return <div>Loading jobs...</div>;
     if (error) return <div className="text-red-600">{error}</div>;
     if (!jobs.length) return <div>No job applications found.</div>
@@ -79,6 +97,29 @@ export default function JobList({ refreshKey }) {
     return (
         <div className="w-full max-w-2xl mx-auto">
             <h2 className="text-2xl font-bold mb-4">Job Applications</h2>
+            <div className="flex gap-4 mb-4">
+                <select
+                    className="border rounded px-2 py-1"
+                    value={filterStatus}
+                    onChange={e => setFilterStatus(e.target.value)}
+                >
+                    <option value="All">All</option>
+                    <option value="Applied">Applied</option>
+                    <option value="Interviewing">Interviewing</option>
+                    <option value="Offer">Offer</option>
+                    <option value="Rejected">Rejected</option>
+                </select>
+                <select
+                    className="border rounded px-2 py-1"
+                    value={sortBy}
+                    onChange={e => setSortBy(e.target.value)}
+                >
+                    <option value="date-desc">Newest First</option>
+                    <option value="date-asc">Oldest First</option>
+                    <option value="company-asc">Company (A-Z)</option>
+                    <option value="company-desc">Company (Z-A)</option>
+                </select>
+            </div>
             <table className="w-full bg-white shadow rounded">
                 <thead>
                     <tr>
@@ -89,7 +130,7 @@ export default function JobList({ refreshKey }) {
                     </tr>
                 </thead>
                 <tbody>
-                    {jobs.map((job) => (
+                    {displayedJobs.map((job) => (
                         <tr key={job._id} className="border-t">
                             {editingId === job._id ? (
                               <>
