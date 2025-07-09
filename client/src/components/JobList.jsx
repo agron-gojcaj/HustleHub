@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import JobDetailsModal from './JobDetailsModal';
 
 export default function JobList({ refreshKey }) {
     const [jobs, setJobs] = useState([]);
@@ -9,6 +10,7 @@ export default function JobList({ refreshKey }) {
     const [error, setError] = useState("");
     const [filterStatus, setFilterStatus] = useState("All");
     const [sortBy, setSortBy] = useState("date-desc");
+    const [selectedJob, setSelectedJob] = useState(null);
 
     useEffect(() => {
         const fetchJobs = async () => {
@@ -131,7 +133,10 @@ export default function JobList({ refreshKey }) {
                 </thead>
                 <tbody>
                     {displayedJobs.map((job) => (
-                        <tr key={job._id} className="border-t">
+                        <tr 
+                            key={job._id} 
+                            className="border-t"
+                        >
                             {editingId === job._id ? (
                               <>
                                 <td className="p-2">
@@ -180,19 +185,21 @@ export default function JobList({ refreshKey }) {
                               </>  
                             ) : (
                             <>
-                                <td className="p-2">{job.company}</td>
-                                <td className="p-2">{job.position}</td>
-                                <td className="p-2">{job.status}</td>
+                                <td className="p-2" onClick={() => setSelectedJob(job)}>{job.company}</td>
+                                <td className="p-2" onClick={() => setSelectedJob(job)}>{job.position}</td>
+                                <td className="p-2" onClick={() => setSelectedJob(job)}>{job.status}</td>
                                 <td className="p-2 flex gap-2 justify-center">
                                 <button
                                     className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
                                     onClick={() => startEdit(job)}
+                                    disabled={!!selectedJob}
                                 >
                                     Edit
                                 </button>
                                 <button
                                     className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
                                     onClick={() => handleDelete(job._id)}
+                                    disabled={!!selectedJob}
                                 >
                                     Delete
                                 </button>
@@ -203,6 +210,13 @@ export default function JobList({ refreshKey }) {
                     ))}
                 </tbody>
             </table>
+
+            {selectedJob && (
+                <JobDetailsModal
+                    job={selectedJob}
+                    onClose={() => setSelectedJob(null)}
+                />
+            )}
         </div>
     );
 }
