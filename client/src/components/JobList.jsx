@@ -185,9 +185,9 @@ export default function JobList({ refreshKey }) {
                               </>  
                             ) : (
                             <>
-                                <td className="p-2" onClick={() => setSelectedJob(job)}>{job.company}</td>
-                                <td className="p-2" onClick={() => setSelectedJob(job)}>{job.position}</td>
-                                <td className="p-2" onClick={() => setSelectedJob(job)}>{job.status}</td>
+                                <td className="p-2">{job.company}</td>
+                                <td className="p-2">{job.position}</td>
+                                <td className="p-2">{job.status}</td>
                                 <td className="p-2 flex gap-2 justify-center">
                                 <button
                                     className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
@@ -202,6 +202,13 @@ export default function JobList({ refreshKey }) {
                                     disabled={!!selectedJob}
                                 >
                                     Delete
+                                </button>
+                                <button
+                                    className="bg-purple-600 text-white px-3 py-1 rounded hover:bg-purple-700"
+                                    onClick={() => setSelectedJob(job)}
+                                    disabled={!!selectedJob}
+                                >
+                                    Details
                                 </button>
                                 </td>
                             </>
