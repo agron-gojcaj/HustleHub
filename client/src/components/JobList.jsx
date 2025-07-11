@@ -168,7 +168,7 @@ export default function JobList({ refreshKey }) {
                                         <option value="Rejected">Rejected</option>
                                     </select>
                                 </td>
-                                <td className="p-2" flex gap-2 justify-center>
+                                <td className="p-2 flex gap-2 justify-center">
                                     <button
                                         className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
                                         onClick={() => saveEdit(job._id)}
@@ -189,27 +189,26 @@ export default function JobList({ refreshKey }) {
                                 <td className="p-2">{job.position}</td>
                                 <td className="p-2">{job.status}</td>
                                 <td className="p-2 flex gap-2 justify-center">
-                                <button
-                                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
-                                    onClick={() => startEdit(job)}
-                                    disabled={!!selectedJob}
-                                >
-                                    Edit
-                                </button>
-                                <button
-                                    className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-                                    onClick={() => handleDelete(job._id)}
-                                    disabled={!!selectedJob}
-                                >
-                                    Delete
-                                </button>
-                                <button
-                                    className="bg-purple-600 text-white px-3 py-1 rounded hover:bg-purple-700"
-                                    onClick={() => setSelectedJob(job)}
-                                    disabled={!!selectedJob}
-                                >
-                                    Details
-                                </button>
+                                    <button
+                                        className="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700"
+                                        onClick={() => setSelectedJob(job)}
+                                    >
+                                        Details
+                                    </button>
+                                    <button
+                                        className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                                        onClick={() => startEdit(job)}
+                                        disabled={!!selectedJob}
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                                        onClick={() => handleDelete(job._id)}
+                                        disabled={!!selectedJob}
+                                    >
+                                        Delete
+                                    </button>
                                 </td>
                             </>
                             )}
