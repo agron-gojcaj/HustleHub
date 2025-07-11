@@ -4,6 +4,7 @@ import axios from "axios";
 import JobList from "../components/JobList";
 import AddJobForm from "../components/AddJobForm";
 import JobAnalytics from "../components/JobAnalytics";
+import toast from "react-hot-toast";
 
 export default function DashboardPage() {
     const [user, setUser] = useState(null);
@@ -36,6 +37,7 @@ export default function DashboardPage() {
     const handleLogout = () => {
         localStorage.removeItem("token");
         navigate("/login");
+        toast.success("Logged out successfully!");
     };
 
     const handleJobAdded = () => setJobRefreshKey(prev => prev + 1);

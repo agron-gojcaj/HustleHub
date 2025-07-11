@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import JobDetailsModal from './JobDetailsModal';
+import toast from 'react-hot-toast';
 
 export default function JobList({ refreshKey }) {
     const [jobs, setJobs] = useState([]);
@@ -58,8 +59,9 @@ export default function JobList({ refreshKey }) {
             );
             setJobs(jobs.map(job => job._id === id ? res.data : job));
             cancelEdit();
+            toast.success("Job updated successfully!");
         } catch (err) {
-            alert("Failed to update job application");
+            toast.error(err.response?.data?.message || "Failed to update job application");
         }
     };
 
@@ -71,8 +73,9 @@ export default function JobList({ refreshKey }) {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setJobs(jobs.filter(job => job._id !== id));
+            toast.success("Job deleted!");
         } catch (err) {
-            alert("Failed to delete job");
+            toast.error("Failed to delete job");
         }
     };
 
