@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { 
+    PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer,
+    BarChart, Bar, XAxis, YAxis, CartesianGrid,
+} from "recharts";
 
 const STATUS_COLORS = {
     Applied: "#2563eb",
@@ -9,8 +12,14 @@ const STATUS_COLORS = {
     Rejected: "#ef4444",
 };
 
+function getMonthYear(dateStr) {
+    const d = new Date(dateStr);
+    return `${d.toLocaleString("default", { month: "short" })} ${d.getFullYear()}`
+}
+
 export default function JobAnalytics() {
     const [counts, setCounts] = useState({});
+    const [monthlyData, setMonthlyData] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -25,12 +34,23 @@ export default function JobAnalytics() {
                 return acc;
             }, {});
             setCounts(statusCounts);
+
+            const months = {};
+            res.data.forEach(job => {
+                const key = getMonthYear(job.appliedDate);
+                months[key] = (months[key] || 0) + 1;
+            });
+
+            const sortedMonthly = Object.entries(months)
+                .sort((a, b) => new Date(`1 ${a[0]}`) - new Date(`1 ${b[0]}`))
+                .map(([month, count]) => ({ month, count }));
+            setMonthlyData(sortedMonthly);
             setLoading(false);
         };
         fetchJobs();
     }, []);
 
-    const data = Object.entries(counts).map(([status, value]) => ({
+    const pieData = Object.entries(counts).map(([status, value]) => ({
         name: status,
         value,
     }));
@@ -58,7 +78,7 @@ export default function JobAnalytics() {
                     <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
                             <Pie
-                                data={data}
+                                data={pieData}
                                 dataKey="value"
                                 nameKey="name"
                                 cx="50%"
@@ -66,7 +86,7 @@ export default function JobAnalytics() {
                                 outerRadius={60}
                                 label
                             >
-                                {data.map((entry, idx) => (
+                                {pieData.map((entry, idx) => (
                                     <Cell key={`cell-${idx}`} fill ={STATUS_COLORS[entry.name] || "#888"} />
                                 ))}
                             </Pie>
@@ -75,6 +95,20 @@ export default function JobAnalytics() {
                         </PieChart>
                     </ResponsiveContainer>
                 </div>
+            </div>
+
+            {/* Bar Chart per month */}
+            <h3 className="text-lg font-semibold mt-8 mb-2">Applications per Month</h3>
+            <div style={{ width: "100%", height: 260 }}>
+                <ResponsiveContainer>
+                    <BarChart data={monthlyData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="month" />
+                        <YAxis allowDecimals={false} />
+                        <Tooltip />
+                        <Bar dataKey="count" fill="#2563eb" />
+                    </BarChart>
+                </ResponsiveContainer>
             </div>
         </div>
     );
