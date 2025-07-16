@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 export default function AddJobForm({ onJobAdded }) {
     const [company, setCompany] = useState("");
@@ -24,6 +25,7 @@ export default function AddJobForm({ onJobAdded }) {
             setStatus("Applied");
             setLoading(false);
             if (onJobAdded) onJobAdded(res.data);
+            toast.success("Job added successfully!");
         } catch (err) {
             setError(err.response?.data?.message || "Failed to add job");
             setLoading(false);
