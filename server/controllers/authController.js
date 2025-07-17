@@ -45,3 +45,12 @@ exports.authUser = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+exports.getUserProfile = async (req, res) => {
+  const user = await User.findById(req.user._id).select('-password');
+  if (user) {
+    res.json(user);
+  } else {
+    res.status(404).json({ message: 'User not found' });
+  }
+};

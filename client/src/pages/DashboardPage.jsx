@@ -21,7 +21,7 @@ export default function DashboardPage() {
                 return;
             }
             try {
-                const res = await axios.get("http://localhost:5000/api/auth/me", {
+                const res = await axios.get("http://localhost:5000/api/auth/profile", {
                     headers: { Authorization: `Bearer ${token}`}
                 });
                 setUser(res.data);
