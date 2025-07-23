@@ -5,6 +5,8 @@ import RegisterPage from './pages/RegisterPage';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import { Toaster } from 'react-hot-toast';
+import ProfilePage from './pages/ProfilePage';
+import DashboardLayout from './components/DashboardLayout';
 
 function App() {
   return (
@@ -20,6 +22,14 @@ function App() {
             <ProtectedRoute>
               <DashboardPage />
             </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <DashboardLayout>
+              <ProfilePage />
+            </DashboardLayout>
           }
         />
       </Routes>
