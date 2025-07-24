@@ -16,7 +16,10 @@ exports.createContact = async (req, res) => {
 };
 
 exports.getContacts = async (req, res) => {
-  const contacts = await Contact.find({ user: req.user._id }).populate('associatedApplication');
+  const contacts = await Contact.find({ 
+    user: req.user._id,
+    associatedApplication: req.quersy.associatedApplication
+  });
   res.json(contacts);
 };
 

@@ -15,7 +15,10 @@ exports.createInterview = async (req, res) => {
 };
 
 exports.getInterviews = async (req, res) => {
-  const interviews = await Interview.find({ user: req.user._id }).populate('application');
+  const interviews = await Interview.find({ 
+    user: req.user._id,
+    application: req.query.application
+  });
   res.json(interviews);
 };
 
