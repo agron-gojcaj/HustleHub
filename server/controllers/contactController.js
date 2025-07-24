@@ -18,7 +18,7 @@ exports.createContact = async (req, res) => {
 exports.getContacts = async (req, res) => {
   const contacts = await Contact.find({ 
     user: req.user._id,
-    associatedApplication: req.quersy.associatedApplication
+    associatedApplication: req.query.associatedApplication
   });
   res.json(contacts);
 };
@@ -34,10 +34,15 @@ exports.updateContact = async (req, res) => {
 };
 
 exports.deleteContact = async (req, res) => {
-  const contact = await Contact.findById(req.params.id);
-  if (!contact || contact.user.toString() !== req.user._id.toString()) {
-    return res.status(404).json({ message: 'Contact not found or unauthorized' });
+  try {
+    const contact = await Contact.findById(req.params.id);
+    if (!contact || contact.user.toString() !== req.user._id.toString()) {
+      return res.status(404).json({ message: 'Contact not found or unauthorized' });
+    }
+    await Contact.findByIdAndDelete(req.params.id);
+    res.json({ message: "Contact deleted" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
-  await contact.remove();
-  res.json({ message: 'Contact deleted' });
 };

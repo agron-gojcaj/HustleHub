@@ -33,10 +33,15 @@ exports.updateInterview = async (req, res) => {
 };
 
 exports.deleteInterview = async (req, res) => {
-  const interview = await Interview.findById(req.params.id);
-  if (!interview || interview.user.toString() !== req.user._id.toString()) {
-    return res.status(404).json({ message: 'Interview not found or unauthorized' });
+  try {
+    const interview = await Interview.findById(req.params.id);
+    if (!interview || interview.user.toString() !== req.user._id.toString()) {
+      return res.status(404).json({ message: "Interview not found or unauthorized" });
+    }
+    await Interview.findByIdAndDelete(req.params.id);
+    res.json({ message: "Interview deleted" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
-  await interview.remove();
-  res.json({ message: 'Interview deleted' });
 };
