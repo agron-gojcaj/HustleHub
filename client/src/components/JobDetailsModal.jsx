@@ -18,6 +18,8 @@ export default function JobDetailsModal({ job, onClose }) {
         type: "",
         notes: "",
     });
+    const [editingContactId, setEditingContactId] = useState(null);
+    const [editingContactForm, setEditingContactForm] = useState({});
 
     //Fetch contacts/interviews when modal opens
     useEffect(() => {
@@ -101,6 +103,39 @@ export default function JobDetailsModal({ job, onClose }) {
         }
     };
 
+    const handleEditContact = (contact) => {
+        setEditingContactId(contact._id);
+        setEditingContactForm({
+            name: contact.name || "",
+            email: contact.email || "",
+            company: contact.company || "",
+            linkedin: contact.linkedin || "",
+            notes: contact.notes || "",
+        });
+    };
+
+    const handleSaveContact = async (contactId) => {
+        const token = localStorage.getItem("token");
+        try {
+            const res = await axios.put(
+                `http://localhost:5000/api/contacts/${contactId}`,
+                editingContactForm,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            setContacts((prev) =>
+                prev.map((c) => (c._id === contactId ? res.data : c))
+            );
+            setEditingContactId(null);
+            toast.success("Contact updated!");
+        } catch {
+            toast.error("Failed to update contact");
+        }
+    };
+
+    const handleCancelEditContact = () => {
+        setEditingContactId(null);
+    };
+
     if (!job) return null;
 
     return (
@@ -136,24 +171,106 @@ export default function JobDetailsModal({ job, onClose }) {
                 <div className="mt-6">
                     <h3 className="text-lg font-semibold mb-2">Contacts</h3>
                     <ul className="mb-2">
-                        {contacts.map(contact => (
-                            <li key={contact._id} className="border-b py-1 flex justify-between items-center">
-                                <span>
-                                    <span className="font-medium">{contact.name}</span>
-                                    {contact.role ? ` (${contact.role})` : ""}
-                                    {contact.email ? ` • ${contact.email}` : ""}
-                                    {contact.company ? ` • ${contact.company}` : ""}
-                                    {contact.linkedin ? (
-                                        <>
-                                            {" • "}
-                                            <a href={contact.linkedin} target="_blank" rel="noopener noreferrer" className="text-blue=600 underline">LinkedIn</a>
-                                        </>
-                                    ): null}
-                                    {contact.notes ? ` • ${contact.notes}` : ""}
-                                </span>
-                                <button className="text-red-600 px-2" onClick={() => handleDeleteContact(contact._id)}>Delete</button>
-                            </li>
-                        ))}
+                        {contacts.map((contact) => 
+                            editingContactId === contact._id ? (
+                                <li key={contact._id} className="border-b py-1 flex flex-col gap-1">
+                                    <div className="flex flex-wrap gap-2">
+                                        <input
+                                            value={editingContactForm.name}
+                                            onChange={e =>
+                                                setEditingContactForm(f => ({ ...f, name: e.target.value }))
+                                            }
+                                            className="border px-2 py-1 rounded"
+                                            placeholder="Name"
+                                            required
+                                        />
+                                        <input
+                                            value={editingContactForm.email}
+                                            onChange={e =>
+                                                setEditingContactForm(f => ({ ...f, email: e.target.value }))
+                                            }
+                                            className="border px-2 py-1 rounded"
+                                            placeholder="Email"
+                                        />
+                                        <input
+                                            value={editingContactForm.company}
+                                            onChange={e =>
+                                                setEditingContactForm(f => ({ ...f, company: e.target.value }))
+                                            }
+                                            className="border px-2 py-1 rounded"
+                                            placeholder="Company"
+                                        />
+                                        <input
+                                            value={editingContactForm.linkedin}
+                                            onChange={e =>
+                                                setEditingContactForm(f => ({ ...f, linkedin: e.target.value }))
+                                            }
+                                            className="border px-2 py-1 rounded"
+                                            placeholder="LinkedIn"
+                                        />
+                                        <input
+                                            value={editingContactForm.notes}
+                                            onChange={e =>
+                                                setEditingContactForm(f => ({ ...f, notes: e.target.value }))
+                                            }
+                                            className="border px-2 py-1 rounded"
+                                            placeholder="Notes"
+                                        />
+                                    </div>
+                                    <div className="flex gap-2 mt-2">
+                                        <button
+                                            className="bg-blue-600 text-white px-3 py-1 rounded"
+                                            onClick={() => handleSaveContact(contact._id)}
+                                        >
+                                            Save
+                                        </button>
+                                        <button
+                                            className="bg-gray-300 text-white px-3 py-1 rounded"
+                                            onClick={handleCancelEditContact}
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </li>
+                            ) : (
+                                <li key={contact._id} className="border-b py-1 flex justify-between items-center">
+                                    <span>
+                                        <span className="font-medium">{contact.name}</span>
+                                        {contact.role ? ` (${contact.role})` : ""}
+                                        {contact.email ? ` • ${contact.email}` : ""}
+                                        {contact.company ? ` • ${contact.company}` : ""}
+                                        {contact.linkedin ? (
+                                            <>
+                                                {" • "}
+                                                <a
+                                                    href={contact.linkedin}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-blue-600 underline"
+                                                >
+                                                    LinkedIn
+                                                </a>
+                                            </>
+                                        ) : null}
+                                        {contact.notes ? ` • ${contact.notes}` : ""}
+                                    </span>
+                                    <span className="flex gap-2">
+                                        <button
+                                            className="text-blue-600 px-2"
+                                            onClick={() => handleEditContact(contact)}
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            className="text-red-600 px-2"
+                                            onClick={() => handleDeleteContact(contact._id)}
+                                        >
+                                            Delete
+                                        </button>
+                                    </span>
+                                </li>
+                            )
+                        )}
                     </ul>
                     {/* Add Contact Form */}
                     <form onSubmit={handleAddContact} className="flex flex-wrap gap-2 mb-4">
