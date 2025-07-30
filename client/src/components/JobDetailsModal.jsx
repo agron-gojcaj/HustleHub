@@ -20,6 +20,8 @@ export default function JobDetailsModal({ job, onClose }) {
     });
     const [editingContactId, setEditingContactId] = useState(null);
     const [editingContactForm, setEditingContactForm] = useState({});
+    const [editingInterviewId, setEditingInterviewId] = useState(null);
+    const [editingInterviewForm, setEditingInterviewForm] = useState({});
 
     //Fetch contacts/interviews when modal opens
     useEffect(() => {
@@ -134,6 +136,38 @@ export default function JobDetailsModal({ job, onClose }) {
 
     const handleCancelEditContact = () => {
         setEditingContactId(null);
+    };
+
+    const handleEditInterview = (interview) => {
+        setEditingInterviewId(interview._id);
+        setEditingInterviewForm({
+            date: interview.date || "",
+            time: interview.time || "",
+            type: interview.type || "Other",
+            notes: interview.notes || ""
+        });
+    };
+
+    const handleSaveInterview = async (interviewId) => {
+        const token = localStorage.getItem("token");
+        try {
+            const res = await axios.put(
+                `http://localhost:5000/api/interviews/${interviewId}`,
+                editingInterviewForm,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            setInterviews((prev) =>
+                prev.map((i) => (i._id === interviewId ? res.data : i))
+            );
+            setEditingInterviewId(null);
+            toast.success("Interview updated!");
+        } catch {
+            toast.error("Failed to update interview");
+        }
+    };
+
+    const handleCancelEditInterview = () => {
+        setEditingInterviewId(null);
     };
 
     if (!job) return null;
@@ -298,17 +332,89 @@ export default function JobDetailsModal({ job, onClose }) {
                 <div className="mt-6">
                     <h3 className="text-lg font-semibold mb-2">Interviews</h3>
                     <ul className="mb-2">
-                        {interviews.map(interview => (
-                            <li key={interview._id} className="border-b py-1 flex justify-between items-center">
-                                <span>
-                                    <span className="font-medium">{interview.type}</span> •
-                                    {" "}{new Date(interview.date).toLocaleDateString()}
-                                    {interview.time ? ` ${interview.time}` : ""}
-                                    {interview.notes ? ` • ${interview.notes}` : ""}
-                                </span>
-                                <button className="text-red-600 px-2" onClick={() => handleDeleteInterview(interview._id)}>Delete</button>
-                            </li>
-                        ))}
+                        {interviews.map(interview => 
+                            editingInterviewId === interview._id ? (
+                                <li key={interview._id} className="border-b py-1 flex flex-col gap-1">
+                                    <div className="flex flex-wrap gap-2">
+                                        <input
+                                            type="date"
+                                            value={editingInterviewForm.date}
+                                            onChange={e =>
+                                                setEditingInterviewForm(f => ({ ...f, date: e.target.value }))
+                                            }
+                                            className="border px-2 py-1 rounded"
+                                            required
+                                        />
+                                        <input
+                                            type="time"
+                                            value={editingInterviewForm.time}
+                                            onChange={e =>
+                                                setEditingInterviewForm(f => ({ ...f, time: e.target.value }))
+                                            }
+                                            className="border px-2 py-1 rounded"
+                                        />
+                                        <select
+                                            value={editingInterviewForm.type}
+                                            onChange={e =>
+                                                setEditingInterviewForm(f => ({ ...f, type: e.target.value }))
+                                            }
+                                            className="border px-2 py-1 rounded"
+                                        >
+                                            <option value="Phone">Phone</option>
+                                            <option value="Technical">Technical</option>
+                                            <option value="On-site">On-site</option>
+                                            <option value="HR">HR</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                        <input
+                                            placeholder="Notes"
+                                            value={editingInterviewForm.notes}
+                                            onChange={e =>
+                                                setEditingInterviewForm(f => ({ ...f, notes: e.target.value }))
+                                            }
+                                            className="border px-2 py-1 rounded"
+                                        />
+                                    </div>
+                                    <div className="flex gap-2 mt-2">
+                                        <button
+                                            className="bg-green-600 text-white px-3 py-1 rounded"
+                                            onClick={() => handleSaveInterview(interview._id)}
+                                        >
+                                            Save
+                                        </button>
+                                        <button
+                                            className="bg-gray-400 text-white px-3 py-1 rounded"
+                                            onClick={handleCancelEditInterview}
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </li>
+                            ) : (
+                                <li key={interview._id} classNname="border-b py-1 flex justify-between items-center">
+                                    <span>
+                                        <span className="font-medium">{interview.type}</span> •{" "}
+                                        {new Date(interview.date).toLocaleDateString()}
+                                        {interview.time ? ` ${interview.time}` : ""}
+                                        {interview.notes ? ` • ${interview.notes}` : ""}
+                                    </span>
+                                    <span className="flex gap-2">
+                                        <button
+                                            className="text-blue-600 px-2"
+                                            onClick={() => handleEditInterview(interview)}
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            className="text-red-600 px-2"
+                                            onClick={() => handleDeleteInterview(interview._id)}
+                                        >
+                                            Delete
+                                        </button>
+                                    </span>
+                                </li>
+                            )
+                        )}
                     </ul>
                     {/* Add Interview Form */}
                     <form onSubmit={handleAddInterview} className="flex flex-wrap gap-2 mb-4">
