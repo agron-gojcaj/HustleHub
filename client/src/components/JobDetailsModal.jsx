@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import ContactForm from "./ContactForm";
 
 export default function JobDetailsModal({ job, onClose }) {
     const [contacts, setContacts] = useState([]);
@@ -116,16 +117,16 @@ export default function JobDetailsModal({ job, onClose }) {
         });
     };
 
-    const handleSaveContact = async (contactId) => {
+    const handleSaveContact = async (contactId, data) => {
         const token = localStorage.getItem("token");
         try {
             const res = await axios.put(
                 `http://localhost:5000/api/contacts/${contactId}`,
-                editingContactForm,
+                data,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             setContacts((prev) =>
-                prev.map((c) => (c._id === contactId ? res.data : c))
+                prev.map(c => (c._id === contactId ? res.data : c))
             );
             setEditingContactId(null);
             toast.success("Contact updated!");
@@ -208,63 +209,12 @@ export default function JobDetailsModal({ job, onClose }) {
                         {contacts.map((contact) => 
                             editingContactId === contact._id ? (
                                 <li key={contact._id} className="border-b py-1 flex flex-col gap-1">
-                                    <div className="flex flex-wrap gap-2">
-                                        <input
-                                            value={editingContactForm.name}
-                                            onChange={e =>
-                                                setEditingContactForm(f => ({ ...f, name: e.target.value }))
-                                            }
-                                            className="border px-2 py-1 rounded"
-                                            placeholder="Name"
-                                            required
-                                        />
-                                        <input
-                                            value={editingContactForm.email}
-                                            onChange={e =>
-                                                setEditingContactForm(f => ({ ...f, email: e.target.value }))
-                                            }
-                                            className="border px-2 py-1 rounded"
-                                            placeholder="Email"
-                                        />
-                                        <input
-                                            value={editingContactForm.company}
-                                            onChange={e =>
-                                                setEditingContactForm(f => ({ ...f, company: e.target.value }))
-                                            }
-                                            className="border px-2 py-1 rounded"
-                                            placeholder="Company"
-                                        />
-                                        <input
-                                            value={editingContactForm.linkedin}
-                                            onChange={e =>
-                                                setEditingContactForm(f => ({ ...f, linkedin: e.target.value }))
-                                            }
-                                            className="border px-2 py-1 rounded"
-                                            placeholder="LinkedIn"
-                                        />
-                                        <input
-                                            value={editingContactForm.notes}
-                                            onChange={e =>
-                                                setEditingContactForm(f => ({ ...f, notes: e.target.value }))
-                                            }
-                                            className="border px-2 py-1 rounded"
-                                            placeholder="Notes"
-                                        />
-                                    </div>
-                                    <div className="flex gap-2 mt-2">
-                                        <button
-                                            className="bg-blue-600 text-white px-3 py-1 rounded"
-                                            onClick={() => handleSaveContact(contact._id)}
-                                        >
-                                            Save
-                                        </button>
-                                        <button
-                                            className="bg-gray-300 text-white px-3 py-1 rounded"
-                                            onClick={handleCancelEditContact}
-                                        >
-                                            Cancel
-                                        </button>
-                                    </div>
+                                    <ContactForm
+                                        initialData={editingContactForm}
+                                        onSubmit={data => handleSaveContact(contact._id, data)}
+                                        onCancel={handleCancelEditContact}
+                                        submitLabel="Save"
+                                    />
                                 </li>
                             ) : (
                                 <li key={contact._id} className="border-b py-1 flex justify-between items-center">
