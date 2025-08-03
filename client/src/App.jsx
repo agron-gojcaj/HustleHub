@@ -7,6 +7,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { Toaster } from 'react-hot-toast';
 import ProfilePage from './pages/ProfilePage';
 import DashboardLayout from './components/DashboardLayout';
+import AnalyticsPage from './pages/AnalyticsPage';
 
 function App() {
   return (
@@ -29,6 +30,14 @@ function App() {
           element={
             <DashboardLayout>
               <ProfilePage />
+            </DashboardLayout>
+          }
+        />
+        <Route 
+          path="/analytics"
+          element={
+            <DashboardLayout>
+              <AnalyticsPage />
             </DashboardLayout>
           }
         />

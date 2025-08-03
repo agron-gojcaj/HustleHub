@@ -63,7 +63,6 @@ export default function DashboardPage() {
         <DashboardLayout>
             <div className="min-h-screen flex items-center justify-center bg-slate-50">
                 <h1 className="text-3xl font-bold text-green-700">Welcome to our Dashboard!</h1>
-                <JobAnalytics />
                 <AddJobForm onJobAdded={handleJobAdded} />
                 <JobList  key={jobRefreshKey} />
                 <div className="mb-6">
