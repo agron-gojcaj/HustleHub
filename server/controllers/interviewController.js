@@ -23,13 +23,20 @@ exports.getInterviews = async (req, res) => {
 };
 
 exports.updateInterview = async (req, res) => {
-  const interview = await Interview.findById(req.params.id);
-  if (!interview || interview.user.toString() !== req.user._id.toString()) {
-    return res.status(404).json({ message: 'Interview not found or unauthorized' });
+  try {
+    const updated = await Interview.findOneAndUpdate(
+      { _id: req.params.id, user: req.user._id }, // also checks ownership
+      req.body,
+      { new: true, runValidators: true } // returns updated doc, validates schema
+    );
+    if (!updated) {
+      return res.status(404).json({ message: 'Interview not found or unauthorized' });
+    }
+    res.json(updated);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
-  Object.assign(interview, req.body);
-  const updated = await interview.save();
-  res.json(updated);
 };
 
 exports.deleteInterview = async (req, res) => {

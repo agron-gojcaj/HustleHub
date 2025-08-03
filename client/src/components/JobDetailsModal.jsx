@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import ContactForm from "./ContactForm";
+import InterviewForm from "./InterviewForm";
 
 export default function JobDetailsModal({ job, onClose }) {
     const [contacts, setContacts] = useState([]);
@@ -149,16 +150,16 @@ export default function JobDetailsModal({ job, onClose }) {
         });
     };
 
-    const handleSaveInterview = async (interviewId) => {
+    const handleSaveInterview = async (interviewId, data) => {
         const token = localStorage.getItem("token");
         try {
             const res = await axios.put(
                 `http://localhost:5000/api/interviews/${interviewId}`,
-                editingInterviewForm,
+                data,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             setInterviews((prev) =>
-                prev.map((i) => (i._id === interviewId ? res.data : i))
+                prev.map(i => (i._id === interviewId ? res.data : i))
             );
             setEditingInterviewId(null);
             toast.success("Interview updated!");
@@ -285,60 +286,12 @@ export default function JobDetailsModal({ job, onClose }) {
                         {interviews.map(interview => 
                             editingInterviewId === interview._id ? (
                                 <li key={interview._id} className="border-b py-1 flex flex-col gap-1">
-                                    <div className="flex flex-wrap gap-2">
-                                        <input
-                                            type="date"
-                                            value={editingInterviewForm.date}
-                                            onChange={e =>
-                                                setEditingInterviewForm(f => ({ ...f, date: e.target.value }))
-                                            }
-                                            className="border px-2 py-1 rounded"
-                                            required
-                                        />
-                                        <input
-                                            type="time"
-                                            value={editingInterviewForm.time}
-                                            onChange={e =>
-                                                setEditingInterviewForm(f => ({ ...f, time: e.target.value }))
-                                            }
-                                            className="border px-2 py-1 rounded"
-                                        />
-                                        <select
-                                            value={editingInterviewForm.type}
-                                            onChange={e =>
-                                                setEditingInterviewForm(f => ({ ...f, type: e.target.value }))
-                                            }
-                                            className="border px-2 py-1 rounded"
-                                        >
-                                            <option value="Phone">Phone</option>
-                                            <option value="Technical">Technical</option>
-                                            <option value="On-site">On-site</option>
-                                            <option value="HR">HR</option>
-                                            <option value="Other">Other</option>
-                                        </select>
-                                        <input
-                                            placeholder="Notes"
-                                            value={editingInterviewForm.notes}
-                                            onChange={e =>
-                                                setEditingInterviewForm(f => ({ ...f, notes: e.target.value }))
-                                            }
-                                            className="border px-2 py-1 rounded"
-                                        />
-                                    </div>
-                                    <div className="flex gap-2 mt-2">
-                                        <button
-                                            className="bg-green-600 text-white px-3 py-1 rounded"
-                                            onClick={() => handleSaveInterview(interview._id)}
-                                        >
-                                            Save
-                                        </button>
-                                        <button
-                                            className="bg-gray-400 text-white px-3 py-1 rounded"
-                                            onClick={handleCancelEditInterview}
-                                        >
-                                            Cancel
-                                        </button>
-                                    </div>
+                                    <InterviewForm
+                                        initialData={editingInterviewForm}
+                                        onSubmit={data => handleSaveInterview(interview._id, data)}
+                                        onCancel={handleCancelEditInterview}
+                                        submitLabel="Save"
+                                    />
                                 </li>
                             ) : (
                                 <li key={interview._id} classNname="border-b py-1 flex justify-between items-center">
