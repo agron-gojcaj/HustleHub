@@ -1,8 +1,11 @@
 import { Link, useLocation } from 'react-router-dom';
 import { User, BarChart2, Home, Users } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 export default function SideBar() {
     const { pathname } = useLocation();
+    const navigate = useNavigate();
 
     const navLinks = [
         { to: "/dashboard", label: "Dashboard", icon: <Home size={18} /> },
@@ -10,6 +13,12 @@ export default function SideBar() {
         { to: "/profile", label: "Profile", icon: <User size={18} /> },
         { to: "/contacts", label: "Contacts", icon: <Users size={18} /> },
     ];
+
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        navigate("/login");
+        toast.success("Logged out successfully!");
+    };
 
     return (
         <aside className="bg-blue-700 text-white w-48 min-h-screen flex flex-col shadow-lg">
@@ -30,7 +39,7 @@ export default function SideBar() {
                     </Link>
                 ))}
             </nav>
-            <button className="mx-6 mb-6 mt-auto py-2 bg-blue-900 rounded font-semibold hover:bg-blue-800">
+            <button onClick={handleLogout} className="mx-6 mb-6 mt-auto py-2 bg-blue-900 rounded font-semibold hover:bg-blue-800">
                 Log Out
             </button>
         </aside>
