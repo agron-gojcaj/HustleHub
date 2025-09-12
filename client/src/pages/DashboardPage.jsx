@@ -58,7 +58,7 @@ export default function DashboardPage() {
                 <h1 className="text-3xl font-bold text-green-700">Welcome to the Best Job Application Tracker!</h1>
                 <AddJobForm onJobAdded={handleJobAdded} />
                 <JobList  key={jobRefreshKey} />
-                <div className="mb-6">
+                <div className="m-6">
                     <p className="text-lg"><span className="font-bold">Username:</span> {user.username}</p>
                     <p className="text-lg"><span className="font-bold">Email:</span> {user.email}</p>
                 </div>

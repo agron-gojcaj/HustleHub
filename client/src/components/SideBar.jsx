@@ -8,10 +8,10 @@ export default function SideBar() {
     const navigate = useNavigate();
 
     const navLinks = [
-        { to: "/dashboard", label: "Dashboard", icon: <Home size={18} /> },
-        { to: "/analytics", label: "Analytics", icon: <BarChart2 size={18} /> },
-        { to: "/profile", label: "Profile", icon: <User size={18} /> },
-        { to: "/contacts", label: "Contacts", icon: <Users size={18} /> },
+        { to: "/dashboard", label: "Dashboard", icon: <Home size={25} /> },
+        { to: "/analytics", label: "Analytics", icon: <BarChart2 size={25} /> },
+        { to: "/profile", label: "Profile", icon: <User size={25} /> },
+        /* { to: "/contacts", label: "Contacts", icon: <Users size={18} /> }, */
     ];
 
     const handleLogout = () => {
