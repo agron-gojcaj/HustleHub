@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import JobList from "../components/JobList";
 import AddJobForm from "../components/AddJobForm";
-import JobAnalytics from "../components/JobAnalytics";
 import toast from "react-hot-toast";
 import DashboardLayout from "../components/DashboardLayout";
 
@@ -35,12 +34,6 @@ export default function DashboardPage() {
         fetchUser();
     }, [navigate]);
 
-    const handleLogout = () => {
-        localStorage.removeItem("token");
-        navigate("/login");
-        toast.success("Logged out successfully!");
-    };
-
     const handleJobAdded = () => setJobRefreshKey(prev => prev + 1);
 
     if (loading) {
@@ -61,20 +54,14 @@ export default function DashboardPage() {
 
     return (
         <DashboardLayout>
-            <div className="min-h-screen flex items-center justify-center bg-slate-50">
-                <h1 className="text-3xl font-bold text-green-700">Welcome to our Dashboard!</h1>
+            <div className="min-h-screen bg-slate-50 p-6">
+                <h1 className="text-3xl font-bold text-green-700">Welcome to the Best Job Application Tracker!</h1>
                 <AddJobForm onJobAdded={handleJobAdded} />
                 <JobList  key={jobRefreshKey} />
-                <div className="mb-6">
+                <div className="m-6">
                     <p className="text-lg"><span className="font-bold">Username:</span> {user.username}</p>
                     <p className="text-lg"><span className="font-bold">Email:</span> {user.email}</p>
                 </div>
-                <button
-                    onClick= {handleLogout}
-                    className="px-6 py-2 bg-red-600 text-white rounded font-semibold hover:bg-red-700 transition"
-                >
-                    Logout
-                </button>
             </div>
         </DashboardLayout>
     );

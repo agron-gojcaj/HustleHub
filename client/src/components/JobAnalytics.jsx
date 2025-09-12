@@ -74,7 +74,7 @@ export default function JobAnalytics() {
                     ))}
                 </ul>
                 {/* Pie Chart */}
-                <div className="flex-1 min-w-[200px]" style={{ height: 180 }}>
+                <div className="flex-1 min-w-[200px]" style={{ height: 200 }}>
                     <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
                             <Pie

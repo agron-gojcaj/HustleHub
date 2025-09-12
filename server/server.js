@@ -5,6 +5,7 @@ const authRoutes = require('./routes/authRoutes');
 const applicationRoutes = require('./routes/applicationRoutes');
 const contactRoutes = require('./routes/contactRoutes');
 const interviewRoutes = require('./routes/interviewRoutes');
+const agentRoutes = require('./routes/agentRoutes');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 const cors = require('cors');
 
@@ -19,6 +20,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/applications', applicationRoutes);
 app.use('/api/contacts', contactRoutes);
 app.use('/api/interviews', interviewRoutes);
+app.use('/api/ai', agentRoutes);
 
 app.get('/', (req, res) => {
     res.send('HustleHub API is live!');
