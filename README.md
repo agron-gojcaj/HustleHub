@@ -53,6 +53,7 @@ It’s designed to make the job hunt less overwhelming with **clear dashboards, 
 ```bash
 git clone https://github.com/yourusername/hustlehub.git
 cd hustlehub
+```
 
 ## 📚 Project Structure
 HustleHub/
