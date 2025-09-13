@@ -42,14 +42,6 @@ It’s designed to make the job hunt less overwhelming with **clear dashboards, 
 
 ---
 
-## 🖼️ Screenshots (coming soon)
-
-| Dashboard | Application Form | Copilot Widget |
-|-----------|-----------------|----------------|
-| ![Dashboard Screenshot](./docs/dashboard.png) | ![Form Screenshot](./docs/form.png) | ![Copilot Screenshot](./docs/copilot.png) |
-
----
-
 ## ⚙️ Getting Started
 
 ### Prerequisites
@@ -61,3 +53,21 @@ It’s designed to make the job hunt less overwhelming with **clear dashboards, 
 ```bash
 git clone https://github.com/yourusername/hustlehub.git
 cd hustlehub
+
+## 📚 Project Structure
+HustleHub/
+  ├── server/
+  │   ├── controllers/       # request handlers
+  │   ├── routes/            # API routes
+  │   ├── models/            # Mongoose schemas
+  │   ├── services/          # utility + copilot integration
+  │   ├── config
+  │   ├── middleware
+  │   ├── utils
+  │   └── server.js          # Express app entry
+  ├── client/
+  │   ├── src/components/    # React components (Dashboard, Copilot, etc.)
+  │   ├── src/assets/         
+  │   ├── src/pages/         # Login, Register, Dashboard pages
+  │   └── src/App.jsx
+  └── README.md
