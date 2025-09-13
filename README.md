@@ -72,4 +72,5 @@ cd hustlehub
   │   ├── src/assets/         
   │   ├── src/pages/         # Login, Register, Dashboard pages
   │   └── src/App.jsx
-  └── README.md```
+  └── README.md
+```
