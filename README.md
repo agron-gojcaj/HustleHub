@@ -53,9 +53,11 @@ It’s designed to make the job hunt less overwhelming with **clear dashboards, 
 ```bash
 git clone https://github.com/yourusername/hustlehub.git
 cd hustlehub
+```
 
 ## 📚 Project Structure
-HustleHub/
+
+```HustleHub/
   ├── server/
   │   ├── controllers/       # request handlers
   │   ├── routes/            # API routes
@@ -71,3 +73,4 @@ HustleHub/
   │   ├── src/pages/         # Login, Register, Dashboard pages
   │   └── src/App.jsx
   └── README.md
+```
