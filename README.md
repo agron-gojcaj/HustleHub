@@ -56,7 +56,8 @@ cd hustlehub
 ```
 
 ## 📚 Project Structure
-HustleHub/
+
+```HustleHub/
   ├── server/
   │   ├── controllers/       # request handlers
   │   ├── routes/            # API routes
@@ -71,4 +72,4 @@ HustleHub/
   │   ├── src/assets/         
   │   ├── src/pages/         # Login, Register, Dashboard pages
   │   └── src/App.jsx
-  └── README.md
+  └── README.md```
