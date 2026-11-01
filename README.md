@@ -1,115 +1,190 @@
-# 🚀 HustleHub – Job Search Organizer
+# HustleHub
 
-HustleHub is a full-stack web application that helps job seekers **organize and track their job applications, contacts, and interviews** in one place.  
-It’s designed to make the job hunt less overwhelming with **clear dashboards, structured tracking, and simple workflows**.
+HustleHub is a job-search organizer for tracking applications, interview
+progress, and the people you meet during your search. It is a full-stack
+JavaScript app: a React frontend calls an Express API, which stores user and job
+search data in MongoDB.
 
----
+## What you can do
 
-## ✨ Features
+- Create an account, sign in, and update your profile or password.
+- Add job applications and track their company, position, and status
+  (`Applied`, `Interviewing`, `Offer`, or `Rejected`).
+- Filter and sort applications, edit their details/status, or delete them.
+- Open an application’s **Details** to add and manage related contacts and
+  interviews. Application details can also include a job link, notes, and
+  applied date when provided through the API.
+- View application counts by status and a chart of applications by month.
+- Open the optional AI Copilot to ask general job-search, application, or
+  interview-preparation questions.
 
-- 📂 **Application Tracking**  
-  Keep tabs on every application with role, company, status, and notes.
+The Copilot is a lightweight chat integration, not an autonomous agent. It
+doesn't read or update your application records. Contacts and interviews are
+managed from an application’s **Details** view.
 
-- 👤 **Contact Management**  
-  Store recruiter and hiring manager details to stay on top of networking.
+## How it works
 
-- 📊 **Analytics Dashboard**  
-  Visualize your progress with charts (applications by status, company, timeline).
+The frontend is a Vite/React single-page app. It sends JSON requests to the
+Express server at `http://localhost:5000`; the server uses Mongoose to read and
+write MongoDB documents. Registration and login return a JWT. The browser keeps
+that token in local storage and sends it as a Bearer token for protected profile
+and job-search requests. Each account's applications, contacts, and interviews
+are associated with that user.
 
-- 🔒 **Secure Authentication**  
-  Role-based access and protected routes with JWT.
+The API is mounted under `/api`:
 
-- 💬 **Optional AI Copilot (early prototype)**  
-  Simple chatbot powered by a language model that helps with resume bullets and interview prep.  
-  *This is currently a lightweight LLM integration and not a full agent.*
+| Area | Routes |
+| --- | --- |
+| Authentication and profile | `/api/auth` |
+| Applications | `/api/applications` |
+| Contacts | `/api/contacts` |
+| Interviews | `/api/interviews` |
+| AI Copilot | `/api/ai/agent` |
 
----
+## Requirements
 
-## 🏗️ Tech Stack
+- Node.js 18 or newer and npm
+- A MongoDB Atlas cluster or a local MongoDB server
+- (Optional) Ollama for a free, local AI Copilot, or an OpenAI API key
 
-**Frontend**
-- React.js
-- Tailwind CSS for styling
-- Recharts for data visualization
+## Run locally
 
-**Backend**
-- Node.js + Express.js
-- RESTful API design
-- JWT authentication
+### 1. Get the code and install dependencies
 
-**Database**
-- MongoDB (Mongoose ODM)
+From the repository root, install each app's dependencies:
 
----
-
-## ⚙️ Getting Started
-
-### Prerequisites
-- Node.js >= 18
-- MongoDB installed locally or a MongoDB Atlas cluster
-- (Optional) OpenAI API Key if you want to test the Copilot
-
-### Clone & Install
 ```bash
-git clone https://github.com/yourusername/hustlehub.git
-cd hustlehub
+cd server
+npm ci
+cd ../client
+npm ci
 ```
 
-### MongoDB
+### 2. Configure the server
 
-The server requires MongoDB. For a free hosted database, create a free cluster
-in [MongoDB Atlas](https://www.mongodb.com/products/platform/atlas-database),
-create a database user, and allow your development IP address in Network Access.
-Copy the Node.js connection string from Atlas into `server/.env` as `MONGO_URI`,
-replacing the username, password, and cluster placeholders. URL-encode any
-special characters in the database user's password. Alternatively, use a local
-MongoDB connection string such as `mongodb://127.0.0.1:27017/hustlehub`.
+Copy `server/.env.example` to `server/.env`. Fill in the required settings:
 
-The [server/.env.example](server/.env.example) file shows the required variable
-and the optional AI settings. Copy it to `server/.env`, fill in `MONGO_URI`,
-and replace the `JWT_SECRET` placeholder with a random secret. You can generate
-one locally with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`.
-Keep the secret private and do not commit your `.env` file. Then start the
-server from the `server/` directory.
+```env
+MONGO_URI=mongodb+srv://<username>:<password>@<cluster-host>/hustlehub?retryWrites=true&w=majority
+JWT_SECRET=<a-long-random-secret>
+```
 
-### Optional AI Copilot
+For `MONGO_URI`, replace the placeholders with your MongoDB database user's
+credentials and Atlas cluster host. The `/hustlehub` path selects the database;
+for a local MongoDB instance, you can instead use
+`mongodb://127.0.0.1:27017/hustlehub`. In Atlas, create a database user and
+allow your development IP address in Network Access. URL-encode special
+characters in the database user's password.
 
-The server runs without AI credentials; only the Copilot needs an AI provider.
-For a free, local setup, install [Ollama](https://ollama.com), then download a
-model in a terminal:
+Generate a signing secret locally with Node.js:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+Put the generated value in `JWT_SECRET`. Keep `server/.env` private; it is
+ignored by Git and must not be committed. Changing this secret invalidates
+existing login tokens, so users will need to sign in again.
+
+### 3. Start the server and frontend
+
+Open two terminals from the repository root.
+
+In the first terminal:
+
+```bash
+cd server
+npm run dev
+```
+
+In the second terminal:
+
+```bash
+cd client
+npm run dev
+```
+
+Open the local URL printed by Vite (normally
+`http://localhost:5173`). The API listens on port `5000` by default. The
+frontend currently uses this local API address directly, so both processes
+should run on the same computer.
+
+Register from the app to create your first account, then use the dashboard to
+add applications. Use **Details** on an application to manage its contacts and
+interviews. Use the sidebar to view analytics, edit your profile, or log out.
+
+## Optional AI Copilot
+
+The server and the rest of the app work without configuring an AI provider.
+Without one, Copilot requests return a configuration error.
+
+### Free local provider with Ollama
+
+Install [Ollama](https://ollama.com), start it, and download a model:
 
 ```bash
 ollama pull llama3.2
 ```
 
-Create `server/.env` with:
+Set these values in `server/.env`:
 
 ```env
 OPENAI_BASE_URL=http://localhost:11434/v1
 AI_MODEL=llama3.2
 ```
 
-Start Ollama and then run the server with `npm run dev` from `server/`.
-Alternatively, set `OPENAI_API_KEY` to use OpenAI's API; API usage may incur
-charges. If neither provider is configured, the rest of the server still works
-and Copilot requests return a configuration error.
+Restart the server after changing `.env`. If you use an OpenAI-compatible local
+server other than Ollama, set `OPENAI_BASE_URL` to that server's compatible API
+URL and `AI_MODEL` to a model it provides.
 
-## 📚 Project Structure
+### OpenAI API
 
-```HustleHub/
-  ├── server/
-  │   ├── controllers/       # request handlers
-  │   ├── routes/            # API routes
-  │   ├── models/            # Mongoose schemas
-  │   ├── services/          # utility + copilot integration
-  │   ├── config
-  │   ├── middleware
-  │   ├── utils
-  │   └── server.js          # Express app entry
-  ├── client/
-  │   ├── src/components/    # React components (Dashboard, Copilot, etc.)
-  │   ├── src/assets/         
-  │   ├── src/pages/         # Login, Register, Dashboard pages
-  │   └── src/App.jsx
-  └── README.md
+To use OpenAI instead, set `OPENAI_API_KEY` in `server/.env`, remove or comment
+out `OPENAI_BASE_URL`, and optionally set `AI_MODEL` (defaults to
+`gpt-4o-mini`). API usage may incur charges. Never put provider keys in the
+frontend or commit them to Git.
+
+## Useful commands
+
+Run these from the corresponding directory:
+
+| Directory | Command | Purpose |
+| --- | --- | --- |
+| `server` | `npm run dev` | Start the API with automatic restarts |
+| `server` | `npm start` | Start the API |
+| `client` | `npm run dev` | Start the Vite development server |
+| `client` | `npm run build` | Build the frontend for production |
+| `client` | `npm run lint` | Run ESLint |
+
+## Project layout
+
+```text
+HustleHub/
+├── client/
+│   └── src/
+│       ├── components/   # Dashboard, application, contact, and interview UI
+│       └── pages/        # Login, registration, dashboard, analytics, profile
+└── server/
+    ├── config/           # MongoDB connection
+    ├── controllers/      # API request handlers
+    ├── middleware/       # Authentication and error handling
+    ├── models/           # Mongoose schemas
+    ├── routes/           # Express API routes
+    ├── services/         # AI Copilot integration
+    └── server.js         # API entry point
 ```
+
+## Troubleshooting
+
+- **`MONGO_URI is not set`**: check that `server/.env` exists and contains a
+  non-empty `MONGO_URI`.
+- **MongoDB connection fails**: verify the Atlas host, database username and
+  password, URL-encode special password characters, and allow your IP in Atlas
+  Network Access.
+- **`JWT_SECRET is not set`**: add a random `JWT_SECRET` to `server/.env` and
+  restart the server.
+- **Copilot configuration error**: configure Ollama or an OpenAI API key as
+  described above. Restart the server after editing `.env`.
+- **Login or API calls fail**: confirm MongoDB and the server are running, then
+  check the browser's Network panel and the server terminal for the request
+  error.
