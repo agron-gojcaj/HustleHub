@@ -29,4 +29,5 @@ coverage/
 
 # Misc
 .env.*
+!server/.env.example
 *.local

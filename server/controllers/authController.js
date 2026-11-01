@@ -3,7 +3,14 @@ const generateToken = require('../utils/generateToken');
 
 exports.registerUser = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const username = typeof req.body?.username === 'string' ? req.body.username.trim() : '';
+    const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+    const password = typeof req.body?.password === 'string' ? req.body.password : '';
+
+    if (!username || !email || !password) {
+      return res.status(400).json({ message: 'Username, email, and password are required' });
+    }
+
     const userExists = await User.findOne({ email });
     if (userExists) return res.status(400).json({ message: 'User already exists' });
 
@@ -21,13 +28,22 @@ exports.registerUser = async (req, res) => {
       res.status(400).json({ message: 'Invalid user data' });
     }
   } catch (err) {
+    if (err.code === 11000) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
+    console.error('[registerUser] error:', err);
     res.status(500).json({ message: 'Server error' });
   }
 };
 
 exports.authUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+    const password = typeof req.body?.password === 'string' ? req.body.password : '';
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required' });
+    }
+
     const user = await User.findOne({ email });
     if (user && (await user.matchPassword(password))) {
       res.json({
@@ -42,6 +58,7 @@ exports.authUser = async (req, res) => {
       res.status(401).json({ message: 'Invalid email or password' });
     }
   } catch (err) {
+    console.error('[authUser] error:', err);
     res.status(500).json({ message: 'Server error' });
   }
 };

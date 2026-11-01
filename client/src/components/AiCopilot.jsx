@@ -44,6 +44,7 @@ export default function AiCopilotWidget() {
         {
           role: "assistant",
           content:
+            err.response?.data?.error ||
             "⚠️ Error contacting AI service. Please try again in a moment.",
         },
       ]);

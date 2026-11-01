@@ -10,6 +10,10 @@ const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 const cors = require('cors');
 
 dotenv.config();
+if (!process.env.JWT_SECRET?.trim()) {
+    console.error('JWT_SECRET is not set. Add a signing secret to server/.env before starting the server.');
+    process.exit(1);
+}
 connectDB();
 
 const app = express();
